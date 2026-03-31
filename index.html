@@ -1,22 +1,421 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Pago</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PokeCards Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <style>
+    :root {
+      --gold: #f5c842;
+      --gold-dark: #c89a10;
+      --red: #e3342f;
+      --blue: #1a1aff;
+      --dark: #0d0d1a;
+      --darker: #07070f;
+      --card-bg: #13132b;
+      --text: #f0e6ff;
+      --muted: #8888aa;
+      --shine: rgba(255,255,255,0.07);
+    }
 
-<script src="https://sdk.mercadopago.com/js/v2"></script>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    body {
+      background: var(--darker);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Starfield background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(90,40,160,0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(30,10,80,0.5) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 3rem 1rem 1.5rem;
+    }
+
+    .logo-badge {
+      display: inline-block;
+      border: 3px solid var(--gold);
+      border-radius: 50%;
+      width: 72px; height: 72px;
+      line-height: 66px;
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      box-shadow: 0 0 24px var(--gold), inset 0 0 12px rgba(245,200,66,0.15);
+      animation: pulse-gold 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-gold {
+      0%,100% { box-shadow: 0 0 24px var(--gold), inset 0 0 12px rgba(245,200,66,0.15); }
+      50%      { box-shadow: 0 0 48px var(--gold), inset 0 0 20px rgba(245,200,66,0.25); }
+    }
+
+    header h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      background: linear-gradient(135deg, #f5c842 0%, #fff 50%, #f5c842 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+      text-shadow: none;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 0.4rem;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      padding: 0.5rem 1.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .tab.active, .tab:hover {
+      background: var(--gold);
+      color: var(--dark);
+      border-color: var(--gold);
+    }
+
+    /* ── Grid ── */
+    .shop-grid {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 3rem;
+    }
+
+    /* ── Pokémon Card ── */
+    .poke-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.28s cubic-bezier(.22,.68,0,1.2), box-shadow 0.28s;
+    }
+
+    .poke-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--shine) 0%, transparent 60%);
+      pointer-events: none;
+      border-radius: 18px;
+    }
+
+    .poke-card:hover {
+      transform: translateY(-8px) scale(1.025);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(245,200,66,0.15);
+    }
+
+    .card-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.1);
+    }
+
+    /* emoji placeholder while no real image */
+    .card-placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      background: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.06) 0%, transparent 70%);
+    }
+
+    .rarity-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .rarity-badge.legendary { color: var(--gold); border-color: var(--gold); }
+    .rarity-badge.rare      { color: #a78bfa; border-color: #a78bfa; }
+    .rarity-badge.uncommon  { color: #34d399; border-color: #34d399; }
+    .rarity-badge.common    { color: var(--muted); }
+
+    .card-info {
+      padding: 0.9rem 1rem 1rem;
+    }
+
+    .card-info h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-type {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+    }
+
+    .price {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1rem;
+      color: var(--gold);
+    }
+
+    .btn-buy {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: var(--dark);
+      border: none;
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-buy:hover { opacity: 0.85; transform: scale(1.05); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid rgba(245,200,66,0.25);
+      border-radius: 24px;
+      max-width: 420px;
+      width: 90%;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 40px rgba(245,200,66,0.1);
+      animation: modal-in 0.3s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    @keyframes modal-in {
+      from { opacity:0; transform: scale(0.85) translateY(30px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: var(--text);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.18); }
+
+    .modal h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.2rem;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+    .modal .modal-type { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+    .modal .modal-emoji { font-size: 4.5rem; display: block; text-align: center; margin-bottom: 1rem; }
+    .modal .modal-price {
+      font-size: 1.6rem;
+      font-family: 'Cinzel Decorative', serif;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .modal-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+
+    #wallet_container { min-height: 48px; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>Pagar producto</h1>
+<header>
+  <div class="logo-badge">⚡</div>
+  <h1>PokeCards Store</h1>
+  <p>Cartas Pokémon originales · Envío a todo Chile</p>
+</header>
 
-<div id="wallet_container"></div>
+<div class="tabs">
+  <button class="tab active" onclick="filterCards('all')">Todos</button>
+  <button class="tab" onclick="filterCards('fuego')">🔥 Fuego</button>
+  <button class="tab" onclick="filterCards('agua')">💧 Agua</button>
+  <button class="tab" onclick="filterCards('psiquico')">🔮 Psíquico</button>
+  <button class="tab" onclick="filterCards('electrico')">⚡ Eléctrico</button>
+</div>
 
+<div class="shop-grid" id="shopGrid"></div>
+
+<!-- Modal de pago -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <span class="modal-emoji" id="modalEmoji"></span>
+    <h2 id="modalName"></h2>
+    <div class="modal-type" id="modalType"></div>
+    <div class="modal-price" id="modalPrice"></div>
+    <p class="modal-desc" id="modalDesc"></p>
+    <div id="wallet_container"></div>
+  </div>
+</div>
+
+<footer>© 2025 PokeCards Store · Pagos seguros con Mercado Pago · Santiago, Chile</footer>
+
+<script>
+  const CARDS = [
+    { id:1, name:"Charizard VMAX", type:"fuego", emoji:"🦎", rarity:"legendary", price:45000,
+      desc:"Charizard VMAX Gigantamax. HP 330. Ataque G-Max Wildfire. Edición especial Champion's Path." },
+    { id:2, name:"Blastoise GX",  type:"agua",   emoji:"🐢", rarity:"rare",      price:18000,
+      desc:"Blastoise GX con ataques Hydro Pump y GX Torrent Zone. Ilustración alternativa." },
+    { id:3, name:"Mewtwo EX",     type:"psiquico",emoji:"👾",rarity:"legendary", price:35000,
+      desc:"Mewtwo EX Full Art de la serie XY. Psychic Infinity. Estado mint condition." },
+    { id:4, name:"Pikachu V",     type:"electrico",emoji:"⚡",rarity:"uncommon", price:8500,
+      desc:"Pikachu V ilustración especial. Quick Attack y Volt Tackle. Perfecto para coleccionar." },
+    { id:5, name:"Gyarados VSTAR",type:"agua",   emoji:"🐉", rarity:"rare",      price:22000,
+      desc:"Gyarados VSTAR con ilustración completa holo. Dragon Splash y VSTAR Power." },
+    { id:6, name:"Gengar EX",     type:"psiquico",emoji:"👻",rarity:"rare",      price:14000,
+      desc:"Gengar EX de la expansión Paldea Evolved. Shadow Force y Poltergeist." },
+    { id:7, name:"Arcanine V",    type:"fuego",  emoji:"🐕", rarity:"uncommon",  price:7000,
+      desc:"Arcanine V ilustración especial. Extreme Speed y Flamethrower. Holo foil." },
+    { id:8, name:"Raichu VMAX",   type:"electrico",emoji:"🌟",rarity:"legendary",price:29000,
+      desc:"Raichu VMAX Gigantamax con Thunder Max. Edición Vivid Voltage. Full Art holo." },
+  ];
+
+  const rarityColor = { legendary:'legendary', rare:'rare', uncommon:'uncommon', common:'common' };
+
+  function renderCards(filter='all') {
+    const grid = document.getElementById('shopGrid');
+    const list = filter === 'all' ? CARDS : CARDS.filter(c => c.type === filter);
+    grid.innerHTML = list.map(c => `
+      <div class="poke-card" onclick="openModal(${c.id})" data-type="${c.type}">
+        <div class="card-placeholder">${c.emoji}</div>
+        <span class="rarity-badge ${rarityColor[c.rarity]}">${c.rarity}</span>
+        <div class="card-info">
+          <h3>${c.name}</h3>
+          <div class="card-type">${c.type.charAt(0).toUpperCase()+c.type.slice(1)}</div>
+          <div class="card-bottom">
+            <span class="price">$${c.price.toLocaleString('es-CL')}</span>
+            <button class="btn-buy">Comprar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCards(type) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderCards(type);
+  }
+
+  function openModal(id) {
+    const c = CARDS.find(x=>x.id===id);
+    document.getElementById('modalEmoji').textContent = c.emoji;
+    document.getElementById('modalName').textContent = c.name;
+    document.getElementById('modalType').textContent = c.type.charAt(0).toUpperCase()+c.type.slice(1);
+    document.getElementById('modalPrice').textContent = '$'+c.price.toLocaleString('es-CL')+' CLP';
+    document.getElementById('modalDesc').textContent = c.desc;
+    document.getElementById('wallet_container').innerHTML = '';
+    document.getElementById('modalOverlay').classList.add('open');
+    initPayment(c);
+  }
+
+  function closeModal(e) {
+    if(e.target === document.getElementById('modalOverlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function initPayment(card) {
+    fetch(`${SERVER_URL}/crear-preferencia?title=${encodeURIComponent(card.name)}&price=${card.price}`)
+      .then(r=>r.json())
+      .then(data=>{
+        const mp = new MercadoPago(MP_PUBLIC_KEY);
+        mp.bricks().create("wallet","wallet_container",{
+          initialization:{ preferenceId: data.id }
+        });
+      })
+      .catch(err=>console.error('Error MP:',err));
+  }
+
+  renderCards();
+</script>
 <script src="script.js"></script>
-
 </body>
-
 </html>
