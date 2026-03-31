@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PokeCards Store</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="script.js"></script>
   <script src="https://sdk.mercadopago.com/js/v2"></script>
   <style>
     :root {
@@ -403,19 +404,32 @@
   }
 
   function initPayment(card) {
-    fetch(`${SERVER_URL}/crear-preferencia?title=${encodeURIComponent(card.name)}&price=${card.price}`)
-      .then(r=>r.json())
-      .then(data=>{
+    document.getElementById('wallet_container').innerHTML = '<p style="color:#8888aa;text-align:center;font-size:0.9rem">Cargando pago...</p>';
+
+    fetch(`${SERVER_URL}/crear-preferencia?title=${encodeURIComponent(card.name)}&price=${card.price}`, {
+      headers: {
+        "ngrok-skip-browser-warning": "true"   // ← necesario para ngrok
+      }
+    })
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data => {
+        if (!data.id) throw new Error('No llegó el preferenceId: ' + JSON.stringify(data));
         const mp = new MercadoPago(MP_PUBLIC_KEY);
-        mp.bricks().create("wallet","wallet_container",{
-          initialization:{ preferenceId: data.id }
+        mp.bricks().create("wallet", "wallet_container", {
+          initialization: { preferenceId: data.id }
         });
       })
-      .catch(err=>console.error('Error MP:',err));
+      .catch(err => {
+        console.error('Error MP:', err);
+        document.getElementById('wallet_container').innerHTML =
+          `<p style="color:#e3342f;font-size:0.85rem;text-align:center">❌ Error al cargar el pago.<br><small>${err.message}</small></p>`;
+      });
   }
 
   renderCards();
 </script>
-<script src="script.js"></script>
 </body>
 </html>
