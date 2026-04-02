@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════ */
 
 const CONFIG = {
-  SERVER_URL:    'https://1fa5-179-4-172-127.ngrok-free.app',  // ← tu URL ngrok
+  SERVER_URL:    'https://b7a0-179-4-172-127.ngrok-free.app',  // ← tu URL ngrok
   MP_PUBLIC_KEY: 'APP_USR-9235c438-7dc2-483e-86d9-c851898a3ea0', // ← tu key de Mercado Pago
   WHATSAPP:      '56920282860',
 };
