@@ -15,8 +15,6 @@ const TYPE_EMOJI = {
 };
 
 // ── CARTAS ───────────────────────────────────────
-// Para agregar una carta nueva: copia un bloque {} y rellena los campos.
-// img: ruta relativa desde la carpeta raíz, ej: 'img/mi-carta.jpg'
 const CARDS = [
   {
     id: 1, name: 'Charizard VMAX', type: 'fuego', emoji: '🦎',
@@ -69,7 +67,6 @@ const CARDS = [
 ];
 
 // ── SOBRES ───────────────────────────────────────
-// Para agregar un sobre nuevo: copia un bloque {} y rellena los campos.
 const PACKS = [
   { id:'p1', name:'Sobre Scarlet & Violet', emoji:'🌺', img:'img/sobre_1.jfif', price: 3500, tag:'Nuevo' },
   { id:'p2', name:'Sobre Paldea Evolved',   emoji:'🔮', img:'img/sobre_2.jfif', price: 3200, tag:'Popular' },
@@ -78,12 +75,31 @@ const PACKS = [
   { id:'p5', name:'Sobre Temporal Forces',  emoji:'⏳', img:'img/sobre_5.jfif', price: 3600, tag:'Nuevo' },
 ];
 
+// ── ALMACÉN DE ITEMS (para onclick seguro) ────────
+// Guarda todos los items en un objeto indexado por id
+// así el onclick solo pasa el id como string simple, sin JSON
+const ITEM_STORE = {};
+CARDS.forEach(c => { ITEM_STORE[c.id] = c; });
+PACKS.forEach(p => {
+  ITEM_STORE[p.id] = {
+    ...p,
+    type: 'Booster Pack',
+    desc: `Sobre sellado oficial. Contiene cartas aleatorias de la expansión ${p.name}.`,
+  };
+});
+
+function getItem(id) {
+  // Los ids numéricos llegan como string desde el atributo HTML
+  const key = isNaN(id) ? id : Number(id);
+  return ITEM_STORE[key] || ITEM_STORE[id];
+}
+
 // ── RENDER SOBRES ────────────────────────────────
 function renderPacks() {
   const container = document.getElementById('packsRow');
   if (!container) return;
   container.innerHTML = PACKS.map(p => `
-    <div class="pack-card" onclick="openModal({...${JSON.stringify(p)}, type:'Booster Pack', desc:'Sobre sellado oficial. Contiene cartas aleatorias de la expansión ${p.name}.'})">
+    <div class="pack-card" data-item-id="${p.id}">
       <div class="pack-img-wrap">
         ${p.img
           ? `<img src="${p.img}" alt="${p.name}" loading="lazy">`
@@ -109,7 +125,7 @@ function renderCards(filter = 'all') {
   const list = filter === 'all' ? CARDS : CARDS.filter(c => c.type === filter);
 
   grid.innerHTML = list.map(c => `
-    <div class="poke-card" onclick='openModal(${JSON.stringify(c)})' data-type="${c.type}">
+    <div class="poke-card" data-item-id="${c.id}" data-type="${c.type}">
       <div class="card-img-wrap">
         ${c.img
           ? `<img src="${c.img}" alt="${c.name}" loading="lazy">`
@@ -128,13 +144,23 @@ function renderCards(filter = 'all') {
   `).join('');
 }
 
-// ── FILTRO POR TIPO ──────────────────────────────
+// ── DELEGACIÓN DE CLICKS (cartas + sobres) ────────
 document.addEventListener('click', function(e) {
+  // Filtro por tipo
   const tab = e.target.closest('[data-filter]');
-  if (!tab) return;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  tab.classList.add('active');
-  renderCards(tab.dataset.filter);
+  if (tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderCards(tab.dataset.filter);
+    return;
+  }
+
+  // Click en carta o sobre
+  const card = e.target.closest('[data-item-id]');
+  if (card) {
+    const item = getItem(card.dataset.itemId);
+    if (item) openModal(item);
+  }
 });
 
 // ── INIT ─────────────────────────────────────────
