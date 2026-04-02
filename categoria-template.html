@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!--
+    ══════════════════════════════════════════════════════
+    PLANTILLA PARA NUEVA CATEGORÍA — Shopteria
+    ══════════════════════════════════════════════════════
+    Pasos para usarla:
+    1. Guarda este archivo con el nombre de tu categoría
+       Ej: figuras.html  /  funko.html  /  manga.html
+    2. Cambia el <title> y el h1 .site-title
+    3. Crea un archivo  js/NOMBRE.js  con tus productos
+       (copia pokemon.js como base y adapta los datos)
+    4. Crea un archivo  css/NOMBRE.css  si necesitas estilos
+       específicos (o reutiliza pokemon.css)
+    5. Agrega la tarjeta de la categoría en index.html
+    ══════════════════════════════════════════════════════
+  -->
+  <title>Shopteria · Nueva Categoría</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/pokemon.css"/><!-- cambia por tu css si creas uno propio -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="back-link" href="index.html">Inicio</a>
+  <div class="corner-accent tl"></div>
+  <div class="corner-accent tr"></div>
+  <div class="corner-accent bl"></div>
+  <div class="corner-accent br"></div>
+  <div class="header-inner">
+    <div class="logo-icon">✨</div><!-- cambia el emoji -->
+    <h1 class="site-title">Mi Categoría</h1><!-- cambia el nombre -->
+    <p class="site-sub">
+      <span>●</span> Productos Originales
+      <span>●</span> Envío a todo Chile
+      <span>●</span> Pago Seguro
+    </p>
+  </div>
+</header>
+
+<!--
+  ── FILTROS (opcional) ──────────────────────────────
+  Si tus productos tienen tipos/categorías internas,
+  puedes mantener esta barra de filtros.
+  Si no los necesitas, borra todo el <nav>.
+-->
+<nav class="nav-strip" id="tabsNav">
+  <button class="tab active" data-filter="all">Todos</button>
+  <!-- Agrega más tabs según tus subcategorías -->
+  <!-- <button class="tab" data-filter="tipo1">🔥 Tipo 1</button> -->
+</nav>
+
+<!--
+  ── SECCIÓN DESTACADA (opcional) ───────────────────
+  Úsala para productos destacados, novedades, etc.
+  Si no la necesitas, borra este bloque.
+-->
+<section class="hero-banner z">
+  <h2>— Destacados</h2>
+  <div class="packs-row" id="packsRow"></div>
+</section>
+
+<!-- GRILLA DE PRODUCTOS -->
+<div class="section-title z">— Productos</div>
+<main class="shop-grid z" id="shopGrid"></main>
+
+<!-- MODAL (no tocar) -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true"
+     aria-labelledby="modalName" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModalDirect()" aria-label="Cerrar">✕</button>
+    <div class="modal-emoji-wrap" id="modalEmoji"></div>
+    <h2 class="modal-title" id="modalName"></h2>
+    <div class="modal-type" id="modalType"></div>
+    <div class="modal-price-tag" id="modalPrice"></div>
+    <p class="modal-desc" id="modalDesc"></p>
+    <div id="wallet_container"></div>
+  </div>
+</div>
+
+<!-- WHATSAPP FLOTANTE -->
+<a class="wsp-float"
+   href="https://wa.me/56920282860?text=Hola!%20Me%20interesa%20un%20producto%20de%20Shopteria%20%F0%9F%9B%92"
+   target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span>Consultar</span>
+</a>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Shopteria</div>
+  <p class="footer-copy">© 2025 Shopteria · Santiago, Chile<br>Productos originales · Envíos a todo el país</p>
+  <div class="footer-badges">
+    <span class="badge">🔒 Pago Seguro</span>
+    <span class="badge">📦 Envío protegido</span>
+    <span class="badge">✅ Productos originales</span>
+    <span class="badge">💬 Soporte WhatsApp</span>
+  </div>
+</footer>
+
+<!-- Scripts — agrega tu js/NOMBRE.js al final -->
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/pokemon.js"></script><!-- cambia por tu propio JS -->
+
+</body>
+</html>
