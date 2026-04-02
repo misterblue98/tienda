@@ -1,0 +1,155 @@
+/* ══════════════════════════════════════════════
+   Shopteria — categories.css
+   Estilos del hub principal (index.html)
+   ══════════════════════════════════════════════ */
+
+/* ── Grid de categorías ── */
+.categories-section {
+  position: relative; z-index: 10;
+  max-width: 1100px; margin: 3rem auto 5rem; padding: 0 1.5rem;
+}
+
+.categories-intro {
+  font-family: var(--font-title);
+  font-size: 0.7rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 2rem;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.categories-intro::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.6rem;
+}
+
+/* ── Tarjeta de categoría ── */
+.cat-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: flex; flex-direction: column;
+  transition: transform 0.28s cubic-bezier(.22,.68,0,1.2), box-shadow 0.28s, border-color 0.28s;
+  position: relative;
+}
+.cat-card:hover {
+  transform: translateY(-10px) rotate(-0.5deg);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 35px var(--red-glow);
+  border-color: rgba(255,45,85,0.35);
+}
+
+/* shimmer overlay */
+.cat-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 1; border-radius: var(--radius);
+}
+
+/* top accent line on hover */
+.cat-card::after {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  opacity: 0; transition: opacity 0.28s;
+}
+.cat-card:hover::after { opacity: 1; }
+
+/* imagen / emoji del banner */
+.cat-card-banner {
+  width: 100%; aspect-ratio: 16/9;
+  background: linear-gradient(160deg, var(--panel2) 0%, var(--bg2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.cat-card-banner img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(1.1) contrast(1.05);
+  transition: transform 0.4s ease;
+}
+.cat-card:hover .cat-card-banner img { transform: scale(1.06); }
+
+.cat-card-emoji {
+  font-size: 4.5rem;
+  filter: drop-shadow(0 0 20px var(--red));
+  animation: float 4s ease-in-out infinite;
+  transition: transform 0.3s;
+}
+.cat-card:hover .cat-card-emoji { transform: scale(1.15); }
+
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* badge "nuevo" / "pronto" */
+.cat-badge {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  font-family: var(--font-title); font-size: 0.55rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 3px; font-weight: 700;
+}
+.cat-badge.active   { background: var(--red);    color: #fff; }
+.cat-badge.soon     { background: var(--panel2);  color: var(--muted); border: 1px solid var(--border); }
+.cat-badge.new      { background: var(--gold);    color: #111; }
+.cat-badge.hot      { background: var(--purple);  color: #fff; }
+
+/* info */
+.cat-card-info {
+  padding: 1.1rem 1.1rem 1.2rem;
+  flex: 1; display: flex; flex-direction: column; gap: 0.35rem;
+}
+.cat-card-name {
+  font-family: var(--font-title); font-size: 1.05rem;
+  letter-spacing: 1px; color: var(--text);
+}
+.cat-card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+.cat-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 0.8rem;
+}
+.cat-card-count {
+  font-size: 0.72rem; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.cat-card-arrow {
+  font-family: var(--font-title); font-size: 0.65rem;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--red); transition: transform 0.18s;
+}
+.cat-card:hover .cat-card-arrow { transform: translateX(4px); }
+
+/* tarjeta "próximamente" (opaca, sin link) */
+.cat-card.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+
+/* ── Stats del hero ── */
+.hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 2.5rem; flex-wrap: wrap;
+  margin: 2rem auto; padding: 1.2rem 2rem;
+  max-width: 600px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+  position: relative; z-index: 10;
+}
+.stat { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+.stat-value { font-family: var(--font-title); font-size: 1.5rem; color: var(--gold); }
+.stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .categories-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .hero-stats { gap: 1.5rem; }
+}
+@media (max-width: 380px) {
+  .categories-grid { grid-template-columns: 1fr; }
+}

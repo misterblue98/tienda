@@ -1,0 +1,344 @@
+/* ══════════════════════════════════════════════
+   Shopteria — productos.css
+   Estilos de la sección de productos generales.
+   Solo se carga en productos.html
+   ══════════════════════════════════════════════ */
+
+/* ── Grid ── */
+.productos-grid {
+  position: relative; z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.4rem;
+  max-width: 1160px;
+  margin: 1.5rem auto 0;
+  padding: 0 1.5rem 4rem;
+}
+
+/* ── Tarjeta de producto ── */
+.prod-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.28s cubic-bezier(.22,.68,0,1.2), box-shadow 0.28s, border-color 0.28s;
+}
+.prod-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 30px var(--cyan-glow);
+  border-color: rgba(0,229,255,0.25);
+}
+
+/* shimmer */
+.prod-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+  pointer-events: none; z-index: 1; border-radius: var(--radius);
+}
+
+/* imagen */
+.prod-img-wrap {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(160deg, var(--panel2) 0%, var(--bg2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.prod-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(1.1);
+  transition: transform 0.4s ease;
+}
+.prod-card:hover .prod-img-wrap img { transform: scale(1.05); }
+
+.prod-emoji {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 20px var(--cyan));
+  transition: transform 0.3s;
+}
+.prod-card:hover .prod-emoji { transform: scale(1.12); }
+
+/* info */
+.prod-info {
+  padding: 0.9rem 1rem 1rem;
+  flex: 1; display: flex; flex-direction: column; gap: 0.3rem;
+}
+.prod-category {
+  font-family: var(--font-title);
+  font-size: 0.6rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan);
+}
+.prod-name {
+  font-family: var(--font-title);
+  font-size: 0.88rem; letter-spacing: 0.5px;
+  color: var(--text); line-height: 1.25;
+}
+.prod-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 0.7rem;
+}
+.prod-price {
+  font-family: var(--font-title);
+  font-size: 1rem; color: var(--gold);
+}
+
+/* badge de stock bajo */
+.prod-stock-badge {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  background: rgba(255,45,85,0.15);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: var(--font-title);
+  font-size: 0.55rem; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 3px;
+}
+
+/* mensaje vacío */
+.empty-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 3rem 0;
+}
+
+
+/* ══════════════════════════════════════
+   FORMULARIO DE COMPRA (modal)
+══════════════════════════════════════ */
+
+/* Divisor */
+.buy-divider {
+  font-family: var(--font-title);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-align: center;
+  margin: 1rem 0 0.8rem;
+  position: relative;
+}
+.buy-divider::before,
+.buy-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%; width: 28%;
+  height: 1px;
+  background: var(--border);
+}
+.buy-divider::before { left: 0; }
+.buy-divider::after  { right: 0; }
+
+/* Campos */
+.buy-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.7rem;
+}
+.buy-field label {
+  font-family: var(--font-title);
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.buy-field input,
+.buy-field textarea {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: none;
+  transition: border-color 0.2s;
+  outline: none;
+}
+.buy-field input:focus,
+.buy-field textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+}
+
+/* Error */
+.buy-error {
+  color: var(--red, #ff2d55);
+  font-size: 0.75rem;
+  text-align: center;
+  min-height: 1.1em;
+  margin-bottom: 0.3rem;
+}
+
+/* Botón confirmar pedido */
+.modal-buy-btn {
+  display: block;
+  width: 100%;
+  background: var(--cyan, #00e5ff);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1.2rem;
+  font-family: var(--font-title);
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,229,255,0.25);
+  transition: all 0.2s;
+  margin-bottom: 0.6rem;
+}
+.modal-buy-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,229,255,0.4);
+}
+.modal-buy-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Botón WhatsApp en el modal ── */
+.modal-wsp-btn {
+  display: flex;
+  align-items: center; justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  background: transparent;
+  color: #25d366;
+  text-decoration: none;
+  border: 1px solid #25d366;
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  margin-top: 0.2rem;
+}
+.modal-wsp-btn:hover {
+  background: rgba(37,211,102,0.1);
+  transform: translateY(-2px);
+}
+.modal-wsp-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+
+/* ══════════════════════════════════════
+   PANEL DE ÉXITO (post-compra)
+══════════════════════════════════════ */
+.success-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+}
+.success-icon {
+  font-size: 2.8rem;
+  filter: drop-shadow(0 0 16px rgba(37,211,102,0.5));
+}
+.success-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin: 0;
+}
+.success-msg {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.pedido-id-box {
+  background: rgba(0,229,255,0.07);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  color: var(--cyan);
+  word-break: break-all;
+  width: 100%;
+}
+
+/* En el panel de éxito, el botón de WhatsApp va relleno */
+.success-panel .modal-wsp-btn {
+  background: #25d366;
+  color: #fff;
+  border-color: #25d366;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  width: 100%;
+  margin-top: 0.2rem;
+}
+.success-panel .modal-wsp-btn:hover {
+  background: #1ebe5b;
+  box-shadow: 0 8px 28px rgba(37,211,102,0.55);
+}
+
+.btn-close-success {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+.btn-close-success:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .productos-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
+@media (max-width: 360px) {
+  .productos-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Selects (región y comuna) ── */
+.buy-field select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.2rem;
+}
+.buy-field select:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+}
+.buy-field select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.buy-field select option {
+  background: #1a1a2e;
+  color: var(--text);
+}

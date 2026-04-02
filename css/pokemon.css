@@ -1,0 +1,143 @@
+/* ══════════════════════════════════════════════
+   Shopteria — pokemon.css
+   Estilos de cartas, sobres y tabs de tipo.
+   Solo se carga en pokemon.html
+   ══════════════════════════════════════════════ */
+
+/* ── Sub-nav de tipos ── */
+.nav-strip {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(7,7,15,0.85); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.5rem; padding: 0.75rem 1rem; flex-wrap: wrap;
+}
+.tab {
+  background: transparent; border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted); padding: 0.42rem 1.2rem; border-radius: 4px;
+  cursor: pointer; font-family: var(--font-title); font-size: 0.72rem;
+  letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.18s;
+  position: relative; overflow: hidden;
+}
+.tab::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: var(--red); transform: scaleX(0); transition: transform 0.18s;
+}
+.tab:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+.tab:hover::before { transform: scaleX(1); }
+.tab.active { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 18px var(--red-glow); }
+.tab.active::before { display: none; }
+
+/* ── Banner de sobres ── */
+.hero-banner {
+  position: relative; z-index: 10;
+  max-width: 1160px; margin: 2rem auto 0; padding: 0 1.5rem;
+}
+.hero-banner h2 {
+  font-family: var(--font-title); font-size: 0.7rem;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem;
+}
+.hero-banner h2::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--cyan),transparent); }
+
+.packs-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+/* ── Sobre / Booster Pack Card ── */
+.pack-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; position: relative;
+  cursor: pointer; display: flex; flex-direction: column;
+  transition: transform 0.28s cubic-bezier(.22,.68,0,1.2), box-shadow 0.28s;
+}
+.pack-card:hover { transform: translateY(-10px) rotate(-1deg); box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 35px var(--red-glow); }
+
+.pack-img-wrap {
+  width: 100%; aspect-ratio: 2/3;
+  background: linear-gradient(160deg, var(--panel2) 0%, var(--bg2) 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.pack-img-wrap img { width:100%; height:100%; object-fit:cover; filter:saturate(1.15) contrast(1.05); transition:transform 0.4s ease; }
+.pack-card:hover .pack-img-wrap img { transform: scale(1.06); }
+.pack-img-wrap::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 40%,rgba(0,229,255,0.04) 100%);
+  pointer-events:none;
+}
+
+.pack-emoji { font-size:4.5rem; filter:drop-shadow(0 0 20px var(--red)); animation:float 4s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+.pack-badge {
+  position:absolute; top:10px; left:10px;
+  font-family:var(--font-title); font-size:0.55rem; letter-spacing:1.5px;
+  text-transform:uppercase; padding:3px 8px; border-radius:3px; font-weight:700;
+}
+.pack-badge.legendary { background:var(--gold);   color:#111; }
+.pack-badge.rare      { background:var(--purple); color:#fff; }
+.pack-badge.uncommon  { background:#00b899;       color:#fff; }
+.pack-badge.common    { background:var(--panel2); color:var(--muted); border:1px solid var(--border); }
+
+.pack-info { padding:0.85rem 0.9rem 0.9rem; flex:1; display:flex; flex-direction:column; gap:0.25rem; }
+.pack-name { font-family:var(--font-title); font-size:0.85rem; letter-spacing:0.5px; color:var(--text); line-height:1.2; }
+.pack-type { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.pack-footer { display:flex; align-items:center; justify-content:space-between; margin-top:0.6rem; }
+.pack-price  { font-family:var(--font-title); font-size:1rem; color:var(--gold); letter-spacing:0.5px; }
+
+/* ── Grid de cartas ── */
+.shop-grid {
+  position:relative; z-index:10;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
+  gap:1.4rem; max-width:1160px; margin:1.2rem auto 0; padding:0 1.5rem 4rem;
+}
+
+/* ── Carta Pokémon ── */
+.poke-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); overflow:hidden; cursor:pointer;
+  position:relative; display:flex; flex-direction:column;
+  transition:transform 0.28s cubic-bezier(.22,.68,0,1.2), box-shadow 0.28s;
+}
+.poke-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 20px 50px rgba(0,0,0,0.55), 0 0 30px var(--cyan-glow); }
+.poke-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%);
+  pointer-events:none; z-index:1; border-radius:var(--radius);
+}
+
+.card-img-wrap {
+  width:100%; aspect-ratio:3/4;
+  background:linear-gradient(160deg,#1a1a40 0%,var(--bg) 100%);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; position:relative;
+}
+.card-img-wrap img { width:100%; height:100%; object-fit:cover; filter:saturate(1.1); transition:transform 0.4s ease; }
+.poke-card:hover .card-img-wrap img { transform:scale(1.05); }
+.card-placeholder { font-size:5rem; filter:drop-shadow(0 0 24px var(--cyan)); }
+
+.rarity-badge {
+  position:absolute; top:10px; right:10px; z-index:2;
+  font-family:var(--font-title); font-size:0.55rem; letter-spacing:1.5px;
+  text-transform:uppercase; padding:3px 8px; border-radius:3px; font-weight:700;
+  backdrop-filter:blur(4px);
+}
+.rarity-badge.legendary { background:rgba(255,227,71,0.15); color:var(--gold);   border:1px solid var(--gold); }
+.rarity-badge.rare      { background:rgba(155,89,255,0.15); color:var(--purple); border:1px solid var(--purple); }
+.rarity-badge.uncommon  { background:rgba(0,184,153,0.15);  color:#00b899;       border:1px solid #00b899; }
+.rarity-badge.common    { background:rgba(102,119,170,0.1); color:var(--muted);  border:1px solid var(--border); }
+
+.card-info { padding:0.85rem 0.95rem 1rem; flex:1; display:flex; flex-direction:column; }
+.card-name      { font-family:var(--font-title); font-size:0.82rem; letter-spacing:0.5px; color:var(--text); line-height:1.25; margin-bottom:0.2rem; }
+.card-type-tag  { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.7rem; }
+.card-footer    { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
+.card-price     { font-family:var(--font-title); font-size:1rem; color:var(--gold); }
+
+/* ── Responsive ── */
+@media (max-width:600px) {
+  .shop-grid  { grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:1rem; }
+  .packs-row  { grid-template-columns:repeat(2,1fr); }
+}
